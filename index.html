@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>general purpose skybox loader</title>
     <style>
       body,html{
         background: #000;
@@ -1371,7 +1372,7 @@
             })
           
             // HDRIs
-            Array(24).fill().map(function(v, i){
+            Array(5).fill().map(function(v, i){
               skyboxes = [...skyboxes, loadSkyBox(50, res, `https://srmcgann.github.io/general_purpose_skybox_loader/HDRI/${i+1}.jpg`, 'HDRI')]
             })
             
