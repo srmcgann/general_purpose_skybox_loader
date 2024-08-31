@@ -1,5 +1,5 @@
 # Skybox Loader - dual input types
-![HDRI image](./thumb1.jpg)
+![HDRI image](./thumb.jpg)
 ![sky box](./thumb2.png)
 
 ## USAGE
