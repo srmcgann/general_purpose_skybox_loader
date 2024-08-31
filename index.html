@@ -87,7 +87,7 @@
             Z=C(p)*d
           }
 
-          Q = () => [c.width/2+X/Z*500, c.height/2+Y/Z*500]
+          Q = () => [c.width/2+X/Z*700, c.height/2+Y/Z*700]
           I=(A,B,M,D,E,F,G,H)=>(K=((G-E)*(B-F)-(H-F)*(A-E))/(J=(H-F)*(M-A)-(G-E)*(D-B)))>=0&&K<=1&&(L=((M-A)*(B-F)-(D-B)*(A-E))/J)>=0&&L<=1?[A+K*(M-A),B+K*(D-B)]:0
           
           Normal = (facet, autoFlipNormals=false, X1=0, Y1=0, Z1=0, flip_=false) => {
@@ -1102,6 +1102,8 @@
           subDividedTruncatedOctahedron   = (size, subs, sphereize = 0) => subbed(subs, size, sphereize, TruncatedOctahedron(size), 'TruncatedOctahedron')
           subDividedStellatedDodecahedron = (size, subs, sphereize = 0) => subbed(subs, size, sphereize, StellatedDodecahedron(size))
 
+          skyboxesLoaded = false
+          
           loadSkyBox = (size, pwr, url, type='box') => {
             SkyCube = (size, subs, sphereize, type) => {
               let ret = []
@@ -1109,7 +1111,7 @@
               switch(type){
                 case 'HDRI':
                   if(typeof skycube_hdri == 'undefined'){
-                    ret = subDividedCube(1, subs, 1).map(v=>{
+                    ret = subDividedOctahedron(1, subs, 1).map(v=>{
                       ax = ay = az = 0
                       v.map(q=>{
                         ax += q[0]
@@ -1222,6 +1224,7 @@
             obj.img.onload = () => {
               let l
               obj.loaded = true
+              if(skyboxes.filter(v=>v.loaded).length == boxCt + hdriCt) skyboxesLoaded = true
               obj.skyCube = SkyCube(size, pwr, 1, type)
               obj.width  = buffer.width  = obj.img.width
               obj.height = buffer.height = obj.img.height
@@ -1363,18 +1366,20 @@
             }
           }
           
-          loadSkyBoxes = (res = 5) => {
+          loadSkyBoxes = (res = 6, size=1e3) => {
             skyboxes = []
-            // boxes
-            Array(4).fill().map(function(v, i){
-              skyboxes = [...skyboxes, loadSkyBox(50, res, `https://srmcgann.github.io/general_purpose_skybox_loader/skybox/${i+1}.png`)]
-            })
-          
             // HDRIs
-            Array(5).fill().map(function(v, i){
-              skyboxes = [...skyboxes, loadSkyBox(50, res, `https://srmcgann.github.io/general_purpose_skybox_loader/HDRI/${i+1}.jpg`, 'HDRI')]
+            hdriCt = 5
+            Array(hdriCt).fill().map(function(v, i){
+              skyboxes = [...skyboxes, loadSkyBox(size, res, `https://srmcgann.github.io/general_purpose_skybox_loader/HDRI/${i+1}.jpg`, 'HDRI')]
             })
             
+            // boxes
+            boxCt = 5
+            Array(boxCt).fill().map(function(v, i){
+              skyboxes = [...skyboxes, loadSkyBox(size, res, `https://srmcgann.github.io/general_purpose_skybox_loader/skybox/${i+1}.png`)]
+            })
+          
             skyboxSel = 0
           }
 
@@ -1400,7 +1405,7 @@
           
           Rl = Pt = Yw = oX = oY = oZ = 0
           
-          loadSkyBoxes()
+          loadSkyBoxes(5, 20)
         }
 
         //x.globalAlpha = .25
@@ -1412,13 +1417,21 @@
 
         oX  = 0
         oY  = 0
-        oZ  = 25
+        oZ  = 16
         Rl  = 0
-        Pt  = C(t)/1.25
+        Pt  = C(t/2)
         Yw  = t
 
-        skyboxSel = (t/3|0) % skyboxes.length
-        drawSkyBox()
+        if(skyboxesLoaded){
+          skyboxSel = (t/6|0) % skyboxes.length
+          drawSkyBox()
+        } else {
+          x.font = '100px sans-serif'
+          x.fillStyle = '#fff4'
+          x.textAlign = 'center'
+          l = '.'.repeat((t*60|0)%10)
+          x.fillText(`${l}loading${l}`, c.width/2, c.height/2)
+        }
         
         t+=1/60
         requestAnimationFrame(Draw)
