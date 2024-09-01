@@ -23,4 +23,4 @@ Function set includes 3 parts:
   * global: 'skyboxSel' determines which skybox is drawn via 'drawSkyBox()',
     corresponding to the order in which they were loaded (code-wise, not race-condition wise :P)
 
-### online demo [general purpose skybox loader](https://srmcgann.github.io/TRON2.0)
+### online demo [general purpose skybox loader](https://srmcgann.github.io/general_purpose_skybox_loader/)
